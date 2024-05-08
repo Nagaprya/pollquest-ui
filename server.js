@@ -4,12 +4,12 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 const app_name="pollquest-ui";
-app.use(express.static('public'));
+app.use(express.static(__dirname+'/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get('/'+app_name, (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
 });
 
 app.post('/'+app_name+'/api/data', async (req, res) => {
