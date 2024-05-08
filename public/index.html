@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polls and Q&A App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="loginPage">
+            <h1>Login</h1>
+            <button onclick="login()">Login</button>
+        </div>
+        <div id="createPollPage" style="display: none;">
+            <h1>Create Poll</h1>
+            <input type="text" id="pollQuestionInput" placeholder="Enter poll question">
+            <button onclick="createPoll()">Create Poll</button>
+            <div id="pollCodeDisplay" style="display: none;">
+                <h2>Your poll code:</h2>
+                <p id="pollCode"></p>
+            </div>
+        </div>
+        <div id="createQAPage" style="display: none;">
+            <h1>Ask a Question</h1>
+            <input type="text" id="questionInput" placeholder="Enter your question">
+            <button onclick="askQuestion()">Ask Question</button>
+            <div id="questionDisplay" style="display: none;">
+                <h2>Your question:</h2>
+                <p id="questionText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
