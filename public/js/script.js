@@ -1,45 +1,25 @@
-// Function to handle joining via code
 async function joinViaCode() {
     const code = document.getElementById('join-code').value;
-
     try {
-        const response = await fetch('backend-service/join', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ code })
-        });
-        let responseData=JSON.parse('{"name":"Test"}');
-        window.location.href = `/questions.html?data=${JSON.stringify(responseData)}`;
-
-        if (response.ok) {
-            window.location.href = `/questions.html?data=${JSON.stringify(responseData)}`;
-        } else {
-            console.error('Failed to join:', response.statusText);
-        }
+        window.location.href = `/questions/${code}`;
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
-// Function to generate a code
 async function generateCode() {
     const description = document.getElementById('description').value;
 
     try {
-        const response = await fetch('backend-service/generate', {
+        const response = await fetch(`${pollquestQuestionServiceURL()}/generateCode`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ description })
+            body: JSON.stringify({ description: description })
         });
-        alert('code generated is:7890');
 
         if (response.ok) {
-            
-            //window.location.href = '/questions.html'; // Redirect to questions.html
+            const code = await response.text();
+            console.log(code);
+            window.location.href = `/questions/${code}`;
         } else {
             console.error('Failed to generate code:', response.statusText);
         }
@@ -48,54 +28,6 @@ async function generateCode() {
     }
 }
 
-// Function to load questions and answers from the backend
-async function loadQuestionsAndAnswers() {
-    try {
-        const response = await fetch('backend-service/questions');
-        if (response.ok) {
-            const data = await response.json();
-            const qaSection = document.getElementById('qa-section');
-            qaSection.innerHTML = ''; // Clear previous content
-            data.forEach(qa => {
-                const questionDiv = document.createElement('div');
-                questionDiv.classList.add('question');
-                questionDiv.innerHTML = `
-                    <h3>${qa.question}</h3>
-                    <p><strong>Answer:</strong> ${qa.answer}</p>
-                `;
-                qaSection.appendChild(questionDiv);
-            });
-        } else {
-            console.error('Failed to load questions:', response.statusText);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
+function pollquestQuestionServiceURL() {
+    return 'http://localhost:8081/pollquest-question-service';
 }
-
-// Function to post a new question
-async function postQuestion() {
-    const question = document.getElementById('question').value;
-    try {
-        const response = await fetch('backend-service/questions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ question })
-        });
-        if (response.ok) {
-            // Reload questions and answers after posting
-            loadQuestionsAndAnswers();
-            // Clear the input field
-            document.getElementById('question').value = '';
-        } else {
-            console.error('Failed to post question:', response.statusText);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-// Load questions and answers when the page loads
-window.addEventListener('load', loadQuestionsAndAnswers);
