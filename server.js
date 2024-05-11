@@ -22,7 +22,13 @@ app.use(bodyParser.json());
 //   };
   
 // app.use(cors(corsOpts));
-app.options('*', cors());
+// app.options('*', cors()); --Not worked
+const corsOptions = {
+    origin: 'http://pollquest-ui.default.svc.cluster.local:3000',//(https://your-client-app.com)
+    optionsSuccessStatus: 200,
+  };
+ 
+app.use(cors(corsOptions));
 app.set('view engine', 'ejs');
 
 app.get('/', (req, res) => {
