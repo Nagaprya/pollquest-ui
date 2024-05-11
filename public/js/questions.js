@@ -78,14 +78,19 @@ class Questions extends HTMLElement {
         <ul id="questionList" class="question-list"></ul>
       </div>
     `;
+    this.$ = selector => shadowRoot.querySelector(selector);
+    this.$$ = selector => shadowRoot.querySelectorAll(selector);
+    this.$('#postQuestion').addEventListener('click', () => this.postQuestion());
   }
 
   async connectedCallback() {
-    const fetchQuestions = async (question_id) => {
-      let url = `http://localhost:8081/pollquest-question-service/${question_id}`;
-      const stream = await fetch(url).then(response => response.body);
+    await this.fetchQuestions(this.getAttribute('question_id'));
+  }
 
-      parseStream(stream)
+  async fetchQuestions(question_id) {
+    try {
+      const stream = await fetch(`http://localhost:8081/pollquest-question-service/${question_id}`).then(response => response.body);
+      this.parseStream(stream)
         .then(data => {
           var jsonBody = JSON.parse(data)
           this.shadowRoot.getElementById('questionId').innerText = question_id;
@@ -95,36 +100,36 @@ class Questions extends HTMLElement {
         .catch(error => {
           console.error('Error parsing stream:', error);
         });
+
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+    }
+  }
+
+  parseStream(stream) {
+    const reader = stream.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let result = '';
+
+    const readChunk = () => {
+      return reader.read().then(({ done, value }) => {
+        if (done) {
+          return result;
+        }
+
+        const chunk = decoder.decode(value, { stream: true });
+        result += chunk;
+        return readChunk();
+      });
     };
 
-    await fetchQuestions(this.getAttribute('question_id'));
-
-    function parseStream(stream) {
-      const reader = stream.getReader();
-      const decoder = new TextDecoder('utf-8');
-      let result = '';
-
-      const readChunk = () => {
-        return reader.read().then(({ done, value }) => {
-          if (done) {
-            return result;
-          }
-
-          const chunk = decoder.decode(value, { stream: true });
-          result += chunk;
-          return readChunk();
-        });
-      };
-
-      return readChunk();
-    }
-
-
+    return readChunk();
   }
 
   renderQuestions(questions) {
 
     const questionList = this.shadowRoot.getElementById('questionList');
+    questionList.innerHTML = '';
 
     questions.forEach(questionInput => {
       if (questionInput.trim() !== '') {
@@ -136,6 +141,34 @@ class Questions extends HTMLElement {
     });
 
     this.shadowRoot.getElementById('questionInput').value = '';
+  }
+
+  async postQuestion() {
+    const questionInput = this.shadowRoot.getElementById('questionInput').value.trim();
+    if (questionInput !== '') {
+      const question_id = this.getAttribute('question_id');
+      const requestBody = { questionId: question_id, question: questionInput };
+
+      try {
+        const response = await fetch('http://localhost:8081/pollquest-question-service/addQuestion', {
+          method: 'POST',
+          body: JSON.stringify(requestBody)
+        });
+        if (!response.ok) {
+          throw new Error('Failed to post question');
+        } else {
+          const data = await response.json();
+          console.log(data);
+          this.renderQuestions(data.question.quest);
+        }
+
+        this.$.questionInput.value = '';
+      } catch (error) {
+        console.error('Error posting question:', error);
+      }
+    } else {
+      alert('Please enter a question.');
+    }
   }
 
 }
