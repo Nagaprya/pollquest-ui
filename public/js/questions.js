@@ -3,7 +3,6 @@ class Questions extends HTMLElement {
     super();
     const shadowRoot = this.attachShadow({ mode: 'open' });
     this.$ = shadowRoot.querySelector.bind(this.shadowRoot);
-    const pollquest_question_service_URL = 'http://localhost:8081/pollquest-question-service';
     shadowRoot.innerHTML = `
     <style>
     :host {
@@ -90,41 +89,19 @@ class Questions extends HTMLElement {
 
   async fetchQuestions(question_id) {
     try {
-      const stream = await fetch(`${pollquest_question_service_URL}/${question_id}`).then(response => response.body);
-      this.parseStream(stream)
-        .then(data => {
-          var jsonBody = JSON.parse(data)
-          this.shadowRoot.getElementById('questionId').innerText = question_id;
-          this.shadowRoot.getElementById('description').innerText = jsonBody.description;
-          this.renderQuestions(jsonBody.question.quest);
-        })
-        .catch(error => {
-          console.error('Error parsing stream:', error);
-        });
+      const response = await fetch(`${this.pollquestQuestionServiceURL()}/${question_id}`);
+      var jsonBody = await response.json();
+      this.shadowRoot.getElementById('questionId').innerText = question_id;
+      this.shadowRoot.getElementById('description').innerText = jsonBody.description;
+      this.renderQuestions(jsonBody.question.quest);
 
     } catch (error) {
       console.error('Error fetching questions:', error);
     }
   }
 
-  parseStream(stream) {
-    const reader = stream.getReader();
-    const decoder = new TextDecoder('utf-8');
-    let result = '';
-
-    const readChunk = () => {
-      return reader.read().then(({ done, value }) => {
-        if (done) {
-          return result;
-        }
-
-        const chunk = decoder.decode(value, { stream: true });
-        result += chunk;
-        return readChunk();
-      });
-    };
-
-    return readChunk();
+  pollquestQuestionServiceURL() {
+    return 'http://localhost:8081/pollquest-question-service';
   }
 
   renderQuestions(questions) {
@@ -152,7 +129,7 @@ class Questions extends HTMLElement {
       const requestBody = { questionId: question_id, question: questionInput };
 
       try {
-        const response = await fetch(`${pollquest_question_service_URL}/addQuestion`, {
+        const response = await fetch(`${this.pollquestQuestionServiceURL()}/addQuestion`, {
           method: 'POST',
           body: JSON.stringify(requestBody)
         });
