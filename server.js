@@ -2,19 +2,32 @@ const express = require('express');
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const app = express();
-const cors = require('cors');
 const port = 3000;
 
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+const corsOpts = {
+    origin: '*',
+  
+    methods: [
+      'GET',
+      'POST',
+    ],
+  
+    allowedHeaders: [
+      'Content-Type',
+    ],
+  };
+  
+app.use(cors(corsOpts));
 app.set('view engine', 'ejs');
 
-app.get('/',cors(), (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/questions/:question_id',cors(), async (req, res) => {
+app.get('/questions/:question_id', async (req, res) => {
     try{
         const question_id = req.params.question_id;
         res.render('question', { question_id });
