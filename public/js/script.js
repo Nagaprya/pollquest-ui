@@ -10,9 +10,11 @@ async function joinViaCode() {
             },
             body: JSON.stringify({ code })
         });
+        let responseData=JSON.parse('{"name":"Test"}');
+        window.location.href = `/questions.html?data=${JSON.stringify(responseData)}`;
 
         if (response.ok) {
-            window.location.href = '/questions.html'; // Redirect to questions.html
+            window.location.href = `/questions.html?data=${JSON.stringify(responseData)}`;
         } else {
             console.error('Failed to join:', response.statusText);
         }
@@ -33,9 +35,11 @@ async function generateCode() {
             },
             body: JSON.stringify({ description })
         });
+        alert('code generated is:7890');
 
         if (response.ok) {
-            window.location.href = '/questions.html'; // Redirect to questions.html
+            
+            //window.location.href = '/questions.html'; // Redirect to questions.html
         } else {
             console.error('Failed to generate code:', response.statusText);
         }
