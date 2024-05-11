@@ -1,0 +1,15 @@
+# dependencies
+/node_modules
+/build
+/dist
+/logs
+*.log
+
+.env
+*.suo
+*.user
+*.bak
+*.vscode/
+*.idea/
+.DS_Store
+npm-debug.log
