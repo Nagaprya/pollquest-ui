@@ -3,6 +3,7 @@ class Questions extends HTMLElement {
     super();
     const shadowRoot = this.attachShadow({ mode: 'open' });
     this.$ = shadowRoot.querySelector.bind(this.shadowRoot);
+    const pollquest_question_service_URL = 'http://localhost:8081/pollquest-question-service';
     shadowRoot.innerHTML = `
     <style>
     :host {
@@ -89,7 +90,7 @@ class Questions extends HTMLElement {
 
   async fetchQuestions(question_id) {
     try {
-      const stream = await fetch(`http://localhost:8081/pollquest-question-service/${question_id}`).then(response => response.body);
+      const stream = await fetch(`${pollquest_question_service_URL}/${question_id}`).then(response => response.body);
       this.parseStream(stream)
         .then(data => {
           var jsonBody = JSON.parse(data)
@@ -143,6 +144,7 @@ class Questions extends HTMLElement {
     this.shadowRoot.getElementById('questionInput').value = '';
   }
 
+
   async postQuestion() {
     const questionInput = this.shadowRoot.getElementById('questionInput').value.trim();
     if (questionInput !== '') {
@@ -150,7 +152,7 @@ class Questions extends HTMLElement {
       const requestBody = { questionId: question_id, question: questionInput };
 
       try {
-        const response = await fetch('http://localhost:8081/pollquest-question-service/addQuestion', {
+        const response = await fetch(`${pollquest_question_service_URL}/addQuestion`, {
           method: 'POST',
           body: JSON.stringify(requestBody)
         });
