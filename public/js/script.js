@@ -11,7 +11,9 @@ async function generateCode() {
     const description = document.getElementById('description').value;
 
     try {
-        const response = await fetch(`${pollquestQuestionServiceURL()}/generateCode`, {
+        var url = `${pollquestQuestionServiceURL()}/generateCode`;
+        console.log("Calling URI ->" + url);
+        const response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify({ description: description })
         });

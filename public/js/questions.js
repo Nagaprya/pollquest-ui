@@ -89,7 +89,9 @@ class Questions extends HTMLElement {
 
   async fetchQuestions(question_id) {
     try {
-      const response = await fetch(`${this.pollquestQuestionServiceURL()}/${question_id}`);
+      var url = `${this.pollquestQuestionServiceURL()}/${question_id}`;
+      console.log("Calling URI ->" + url);
+      const response = await fetch(url);
       var jsonBody = await response.json();
       this.shadowRoot.getElementById('questionId').innerText = question_id;
       this.shadowRoot.getElementById('description').innerText = jsonBody.description;
@@ -129,7 +131,9 @@ class Questions extends HTMLElement {
       const requestBody = { questionId: question_id, question: questionInput };
 
       try {
-        const response = await fetch(`${this.pollquestQuestionServiceURL()}/addQuestion`, {
+        var url = `${this.pollquestQuestionServiceURL()}/addQuestion`;
+        console.log("Calling URI ->" + url);
+        const response = await fetch(url, {
           method: 'POST',
           body: JSON.stringify(requestBody)
         });
