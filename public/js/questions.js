@@ -103,7 +103,7 @@ class Questions extends HTMLElement {
   }
 
   pollquestQuestionServiceURL() {
-    return 'http://localhost:8080/pollquest-question-service';
+     return 'http://pollquest-question-service.default.svc.cluster.local:8080/pollquest-question-service';
   }
 
   renderQuestions(questions) {

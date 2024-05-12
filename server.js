@@ -8,26 +8,6 @@ const port = 3000;
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-// const corsOpts = {
-//     origin: '*',
-  
-//     methods: [
-//       'GET',
-//       'POST',
-//     ],
-  
-//     allowedHeaders: [
-//       'Content-Type',
-//     ],
-//   };
-  
-// app.use(cors(corsOpts));
-// app.options('*', cors()); --Not worked
-const corsOptions = {
-    origin: 'http://pollquest-ui.default.svc.cluster.local:3000',//(https://your-client-app.com)
-    optionsSuccessStatus: 200,
-  };
- 
 app.use(cors(corsOptions));
 app.set('view engine', 'ejs');
 
